@@ -48,6 +48,14 @@ static ETSTimer ff;
 
 #define RB_BUFFSIZE       (2048 * 3)
 
+static ICACHE_FLASH_ATTR
+void webadmin_rotate(Request *req, char *body, uint32_t body_length,
+        uint32_t more) {
+   uint32_t angle = atoi(body);
+   motor_rotate(angle);
+   httpresponse_text(req, HTTPSTATUS_OK, NULL, NULL);
+}
+
 
 static ICACHE_FLASH_ATTR
 void fota_reboot(Request *req, char *body, uint32_t body_length, 
@@ -98,6 +106,8 @@ void webadmin_index(Request *req, char *body, uint32_t body_length,
 
 
 static HttpRoute routes[] = {
+    {"FOTA",      "/",            fota_reboot        },
+    {"ROTATE",    "/",            webadmin_rotate    },
     {"OPTIONS",   "/",            webadmin_options   },
     {"GET",       "/",            webadmin_index     },
     {"GET",       "/favicon.ico", webadmin_favicon   },

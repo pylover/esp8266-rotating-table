@@ -38,12 +38,11 @@ void wifi_connect_cb(uint8_t status) {
     }
 }
 
+void onstop() {
+    INFO("Motor Stopped\n");
+}
 
 void user_init(void) {
-    //system_uart_swap();
-    //uart_init(BIT_RATE_115200, BIT_RATE_115200);
-    //os_delay_us(60000);
-    
     uart_div_modify(UART0, UART_CLK_FREQ / BIT_RATE_115200);
     uart_rx_intr_disable(UART0);
     uart_rx_intr_disable(UART1);
@@ -72,11 +71,13 @@ void user_init(void) {
     wifi_start(&params, wifi_connect_cb);
 
     webadmin_start(&params);
+
+    motor_set_stop_callback(onstop);
+    motor_init();
 }
 
 
-void ICACHE_FLASH_ATTR user_pre_init(void)
-{
+void ICACHE_FLASH_ATTR user_pre_init(void) {
     if(!system_partition_table_regist(at_partition_table, 
                 sizeof(at_partition_table)/sizeof(at_partition_table[0]),
                 SPI_FLASH_SIZE_MAP)) {
